@@ -15,19 +15,21 @@ Category.hasMany(Product, {
 });
 
 Product.belongsToMany(Tag, {
-  foreignKey: 'product_id',
-  through: ProductTag,
-  
+  through: {
+    model: ProductTag,
+    unique: false,
+  },
+  as: 'tags'
 });
 
 Tag.belongsToMany(Product, {
-  foreignKey: 'tag_id',
-  through: ProductTag,
+  through: {
+    model: ProductTag,
+    unique: false,
+  },
+  as: 'products'
  
 });
-
-// We package our two models and export them as an object so we can import them together and use their proper names
-module.exports = { Driver, License };// Products belongsTo Category
 
 // Categories have many Products
 

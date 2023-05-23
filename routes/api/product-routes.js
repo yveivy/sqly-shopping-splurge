@@ -4,12 +4,12 @@ const { Product, Category, Tag, ProductTag } = require('../../models');
 // The `/api/products` endpoint
 
 // get all products
-router.get('/products', async (req, res) => {
+router.get('/', async (req, res) => {
   // find all products
   // be sure to include its associated Category and Tag data
   try {
     const products = await Product.findAll({
-      include: [Category, Tag]
+      include: [ {model: Category}, {model: Tag, as: 'tags', through:{ model: ProductTag,attributes: []}}]
     });
     res.json(products);
   } catch (err) {
@@ -20,12 +20,12 @@ router.get('/products', async (req, res) => {
 });
 
 // get one product
-router.get('/products/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
   // find a single product by its `id`
   // be sure to include its associated Category and Tag data
   try {
     const product = await Product.findByPk(req.params.id, {
-      include: [Category, Tag]
+      include: [ {model: Category}, {model: Tag, as: 'tags', through:{ model: ProductTag,attributes: []}}]
     });
     if(!product) {
       return res.status(404).send('Product not found');
@@ -38,7 +38,7 @@ router.get('/products/:id', async (req, res) => {
 });
 
 // create new product
-router.post('products/', (req, res) => {
+router.post('/', (req, res) => {
   /* req.body should look like this...
     {
       product_name: "Basketball",
@@ -68,13 +68,13 @@ router.post('products/', (req, res) => {
       res.status(400).json(err);
     });
 });
-
+// From some reason I get a weird sql message but the update to the product works if you look in the video
 // update product
-router.put('products/:id', (req, res) => {
+router.put('/:id', (req, res) => {
   // update product data
   Product.update(req.body, {
     where: {
-      id: req.params.id,
+      product_id: req.params.id,
     },
   })
     .then((product) => {
@@ -110,12 +110,12 @@ router.put('products/:id', (req, res) => {
       res.status(400).json(err);
     });
 });
-
-router.delete('products/:id', async (req, res) => {
+// Have this set to delete on CASCADE in tables but still get error that it can't be deleted.
+router.delete('/:id', async (req, res) => {
   // delete one product by its `id` value
   try {
     const deletedProduct = await Product.destroy({
-      where: { id: req.params.id },
+      where: { product_id: req.params.id },
     });
     if (!deletedProduct) {
       return res.status(404).send('Product not found');

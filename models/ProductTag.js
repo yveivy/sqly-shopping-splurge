@@ -19,6 +19,7 @@ ProductTag.init(
         references: {
           model: 'Product',
           key: 'Product_id',
+          onDelete: 'CASCADE',
         },
     },
     tag_id: {
@@ -26,6 +27,7 @@ ProductTag.init(
       references: {
         model: 'Tag',
         key: 'Tag_id',
+        onDelete: 'CASCADE'
       },
   },
 
